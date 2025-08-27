@@ -1,8 +1,11 @@
 <template>
-  <div>
-    Hello World! 
-    {{ message }}
+  <div class="container">
     <SearchBar @searchItemChange="onSearchItemChange"></SearchBar>
+    <div class="row">
+      <VideoDetail :video="selected_video" :videos_count="videos.length" />
+      <VideoList :videos_arr="videos" @videoSelected="onVideoSelect" />
+    </div>
+    <!-- <VideoList v-bind:videos_arr="videos"></VideoList> -->
   </div>
 
 </template>
@@ -10,6 +13,8 @@
 <script>
 import axios from 'axios';
 import SearchBar from './components/SearchBar.vue';
+import VideoList from './components/VideoList.vue';
+import VideoDetail from './components/VideoDetail.vue';
 
 const YOUTUBE_API_KEY = process.env.VUE_APP_YOUTUBE_DATA_API
 
@@ -18,12 +23,15 @@ export default {
   name: 'App',
   data() {
     return {
-      message: YOUTUBE_API_KEY
+      videos: [],
+      selected_video: null
     }
   },
   components: {
-    SearchBar: SearchBar
+    SearchBar: SearchBar,
     // SearchBar                  // JS shortform when key and values are equal
+    VideoList,
+    VideoDetail
   },
   methods: {
     onSearchItemChange(searchValue) {
@@ -35,8 +43,12 @@ export default {
           q: searchValue
         }
       }).then(res => {
-        console.log(res)
+        this.videos = res.data.items;
       })
+    },
+    onVideoSelect(video) {
+      // console.log(video)
+      this.selected_video = video
     }
   }
 };
